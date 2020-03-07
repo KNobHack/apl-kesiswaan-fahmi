@@ -85,15 +85,15 @@ if ($_GET['aksi'] == 'tampil') : ?>
     <!-- Pesan(akhir) -->
     <!-- Tombol Tambah -->
     <?php
-        if ($_SESSION['role_user'] == 'siswa') {
-            $hak_tambah_data = $user->ketua;
-        } else if ($_SESSION['role_user'] == 'guru') {
-            $hak_tambah_data = false;
-        } elseif ($_SESSION['role_user'] == 'admin') {
-            $hak_tambah_data = true;
-        } else {
-            $hak_tambah_data = false;
-        } ?>
+    if ($_SESSION['role_user'] == 'siswa') {
+        $hak_tambah_data = $user->ketua;
+    } else if ($_SESSION['role_user'] == 'guru') {
+        $hak_tambah_data = false;
+    } elseif ($_SESSION['role_user'] == 'admin') {
+        $hak_tambah_data = true;
+    } else {
+        $hak_tambah_data = false;
+    } ?>
     <?php if ($hak_tambah_data) : ?>
         <a class="btn btn-primary mb-3 col-xl-3 col-lg-6 col-md-6 col-sm-12" href="home.php?file=siswa&aksi=tambah">Tambah Data Siswa</a>
     <?php endif ?>
@@ -119,12 +119,12 @@ if ($_GET['aksi'] == 'tampil') : ?>
         </thead>
         <tbody>
             <?php
-                if (!empty($_SESSION['tingkat']) || !empty($_SESSION['rumpun']) || !empty($_SESSION['kelas'])) {
-                    $data = $class_siswa->tampil($_SESSION['tingkat'], $_SESSION['rumpun'], $_SESSION['kelas']);
-                } else {
-                    $data = null;
-                }
-                ?>
+            if (!empty($_SESSION['tingkat']) || !empty($_SESSION['rumpun']) || !empty($_SESSION['kelas'])) {
+                $data = $class_siswa->tampil($_SESSION['tingkat'], $_SESSION['rumpun'], $_SESSION['kelas']);
+            } else {
+                $data = null;
+            }
+            ?>
             <?php if (isset($data)) : ?>
                 <?php $no = 0; ?>
                 <?php foreach ($data as $barisSiswa) : ?>
@@ -284,45 +284,55 @@ if ($_GET['aksi'] == 'tampil') : ?>
     </div>
 <?php elseif ($_GET['aksi'] == 'simpan') : ?>
     <?php
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if ($role_user == 'siswa')
-                $ketua = 0;
-            else
-                $ketua = $_POST['ketua'];
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if ($role_user == 'siswa')
+            $ketua = 0;
+        else
+            $ketua = $_POST['ketua'];
 
-            $data = array(
-                'nis' => $_POST['txtNis'],
-                'nama' => $_POST['txtNama'],
-                'tempat_lahir' => $_POST['txtTempatLahir'],
-                'tanggal_lahir' => $_POST['txtTanggalLahir'],
-                'jenis_kelamin' => $_POST['txtJenisKelamin'],
-                'alamat' => $_POST['txtAlamat'],
-                // Menggunakan verifikasi ada di baris 25
-                'tingkat' => $_SESSION['tingkat'],
-                'rumpun' => $_SESSION['rumpun'],
-                'kelas' => $_SESSION['kelas'],
-                'ketua' => $ketua,
-                'edit' => '0',
-                'buat_akun' => '0'
-            );
+        $data = array(
+            'nis' => $_POST['txtNis'],
+            'nama' => $_POST['txtNama'],
+            'tempat_lahir' => $_POST['txtTempatLahir'],
+            'tanggal_lahir' => $_POST['txtTanggalLahir'],
+            'jenis_kelamin' => $_POST['txtJenisKelamin'],
+            'alamat' => $_POST['txtAlamat'],
+            // Menggunakan verifikasi ada di baris 25
+            'tingkat' => $_SESSION['tingkat'],
+            'rumpun' => $_SESSION['rumpun'],
+            'kelas' => $_SESSION['kelas'],
+            'ketua' => $ketua,
+            'edit' => '0',
+            'buat_akun' => '0'
+        );
 
-            $class_siswa->simpan($data);
-        }
-        ?>
+        $class_siswa->simpan($data);
+    }
+    ?>
     <meta http-equiv="refresh" content="0; url=home.php?file=siswa&aksi=tampil">
 <?php elseif ($_GET['aksi'] == 'edit') : ?>
     <?php
-        $siswa = $class_siswa->detail($_GET['nis']);
+    $siswa = $class_siswa->detail($_GET['nis']);
 
-        $pilihP = null;
-        $pilihL = null;
+    $pilihP = null;
+    $pilihL = null;
 
-        if ($siswa->jenis_kelamin == 'L')
-            $pilihL = 'checked';
-        else
-            $pilihP = 'checked';
+    if ($siswa->jenis_kelamin == 'L')
+        $pilihL = 'checked';
+    else
+        $pilihP = 'checked';
 
-        ?>
+    $pilihKM = null;
+    $pilihWKM = null;
+    $pilihSiswa = null;
+    if ($siswa->ketua == '1') {
+        $pilihKM = 'selected';
+    } elseif ($siswa->ketua == '2') {
+        $pilihWKM = 'selected';
+    } else {
+        $pilihSiswa = 'selected';
+    }
+    ?>
     <h3>Edit Data Siswa</h3>
     <div class="col-lg-6 col-xl-6">
         <form method="post" action="home.php?file=siswa&aksi=update">
@@ -388,15 +398,15 @@ if ($_GET['aksi'] == 'tampil') : ?>
             </div>
             <div class="form-group <?= ($role_user == 'siswa') ? 'd-none' : '' ?>">
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="jabatan" id="Siswa_biasa" value="0">
+                    <input class="form-check-input" type="radio" name="jabatan" id="Siswa_biasa" value="0" <?= $pilihSiswa ?>>
                     <label class="form-check-label" for="Siswa_biasa">Siswa Biasa</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="jabatan" id="ketua" value="1">
+                    <input class="form-check-input" type="radio" name="jabatan" id="ketua" value="1" <?= $pilihKM ?>>
                     <label class="form-check-label" for="ketua">KM</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="jabatan" id="Wakil_KM" value="2">
+                    <input class="form-check-input" type="radio" name="jabatan" id="Wakil_KM" value="2" <?= $pilihWKM ?>>
                     <label class="form-check-label" for="Wakil_KM">Wakil KM</label>
                 </div>
             </div>
@@ -406,48 +416,48 @@ if ($_GET['aksi'] == 'tampil') : ?>
     </div>
 <?php elseif ($_GET['aksi'] == 'update') : ?>
     <?php
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') :
-            if (isset($_POST['ubahidentitas'])) :
-                $data = [
-                    'edit' => $_POST['edit']
-                ];
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') :
+        if (isset($_POST['ubahidentitas'])) :
+            $data = [
+                'edit' => $_POST['edit']
+            ];
 
-                $class_siswa->update($_POST['txtNis'], $data);
-            elseif (isset($_POST['buatakun'])) :
-                $data = [
-                    'buat_akun' => $_POST['buat_akun']
-                ];
+            $class_siswa->update($_POST['txtNis'], $data);
+        elseif (isset($_POST['buatakun'])) :
+            $data = [
+                'buat_akun' => $_POST['buat_akun']
+            ];
 
-                $class_siswa->update($_POST['txtNis'], $data);
+            $class_siswa->update($_POST['txtNis'], $data);
 
-                // jika $_POST['buat_akun'] == '1'
-                if ($_POST['buat_akun'] == '1')
-                    $auth->tambahUser($_POST['txtNis'], 'siswa', '123');
-                else
-                    $auth->hapusUser($_POST['txtNis']);
+            // jika $_POST['buat_akun'] == '1'
+            if ($_POST['buat_akun'] == '1')
+                $auth->tambahUser($_POST['txtNis'], 'siswa', '123');
+            else
+                $auth->hapusUser($_POST['txtNis']);
 
-            else :
-                // Mencegah bukan KM merubah atribut ketua
-                if ($role_user == 'siswa')
-                    $ketua = 0;
-                else
-                    $ketua = $_POST['jabatan'];
+        else :
+            // Mencegah bukan KM merubah atribut ketua
+            if ($role_user == 'siswa')
+                $ketua = 0;
+            else
+                $ketua = $_POST['jabatan'];
 
-                $data = array(
-                    'nis' => $_POST['txtNis'],
-                    'nama' => $_POST['txtNama'],
-                    'tempat_lahir' => $_POST['txtTempatLahir'],
-                    'tanggal_lahir' => $_POST['txtTanggalLahir'],
-                    'jenis_kelamin' => $_POST['txtJenisKelamin'],
-                    // Menggunakan verifikasi ada di baris 25
-                    'alamat' => $_POST['txtAlamat'],
-                    'tingkat' => $_SESSION['tingkat'],
-                    'rumpun' => $_SESSION['rumpun'],
-                    'kelas' => $_SESSION['kelas'],
-                    'ketua' => $ketua
-                );
-                $class_siswa->update($_POST['txtNis'], $data);
-            endif ?>
+            $data = array(
+                'nis' => $_POST['txtNis'],
+                'nama' => $_POST['txtNama'],
+                'tempat_lahir' => $_POST['txtTempatLahir'],
+                'tanggal_lahir' => $_POST['txtTanggalLahir'],
+                'jenis_kelamin' => $_POST['txtJenisKelamin'],
+                // Menggunakan verifikasi ada di baris 25
+                'alamat' => $_POST['txtAlamat'],
+                'tingkat' => $_SESSION['tingkat'],
+                'rumpun' => $_SESSION['rumpun'],
+                'kelas' => $_SESSION['kelas'],
+                'ketua' => $ketua
+            );
+            $class_siswa->update($_POST['txtNis'], $data);
+        endif ?>
         <meta http-equiv="refresh" content="0; url=home.php?file=siswa&aksi=tampil">
     <?php endif ?>
 <?php elseif ($_GET['aksi'] == 'hapus') : ?>
