@@ -1,0 +1,7 @@
+{
+    "name": "knobhack/apl_kesiswaan",
+    "description": "Aplikasi Kesiswaan sederhana",
+    "require": {
+        "twbs/bootstrap": "4.4.1"
+    }
+}

@@ -4,7 +4,7 @@ class Database
 {
     protected $host = 'localhost';
     protected $user = 'root';
-    protected $pass = '';
+    protected $pass = '123';
     protected $name = 'db_kesiswaan';
     public $mysqli;
 
